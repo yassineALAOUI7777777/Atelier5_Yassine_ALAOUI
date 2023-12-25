@@ -1,0 +1,44 @@
+MyAppUser _userFromFirebaseUser(User user, String role) {
+  return MyAppUser(
+    uid: user.uid,
+    email: user.email!,
+    role: role,
+  );
+}
+
+class MyWidget extends StatelessWidget {
+  const MyWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return SignInScreen();
+        }
+
+        User? user = snapshot.data;
+        if (user == null) {
+          return Text('No user data available');
+        }
+
+        // Replace 'getRoleFromYourDatabase' with the actual logic to get the user role
+        String role = getRoleFromYourDatabase(user.uid);
+
+        if (role == 'admin') {
+          return AdminDashboard();
+        } else {
+          return UserDashboard();
+        }
+      },
+    );
+  }
+}
+
+// Example function to get user role from your database
+String getRoleFromYourDatabase(String userId) {
+  // Replace this with your actual logic to get the user role from your database
+  // You might use Firebase Firestore, Realtime Database, or any other backend service
+  return 'user'; // Placeholder value, replace with actual role retrieval logic
+}
